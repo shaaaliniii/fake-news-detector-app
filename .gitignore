@@ -3,3 +3,5 @@ __pycache__/
 *.pyc
 *.pkl
 .env
+fake_or_real_news.csv
+*.pkl
