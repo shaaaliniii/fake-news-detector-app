@@ -243,7 +243,7 @@ body.show-chatbot .chatbot-popup{
     font-size: 0.95rem;
     background: #F2f2ff;
 }
-.chat-body .bot-message .thinking .message-text{
+.chat-body .bot-message.thinking .message-text{
     padding: 2px 16px;
 
 }
@@ -354,7 +354,7 @@ body.show-chatbot .chatbot-popup{
 
 .chat-form .chat-controls #send-message {
     color: #fff;
-    display: none;
+    display: block;
     background: #5350c4;
 }
 

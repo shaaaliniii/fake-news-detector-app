@@ -1,3 +1,5 @@
+from wsgiref import headers
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import joblib
@@ -6,8 +8,8 @@ from bs4 import BeautifulSoup
 from googlesearch import search
 
 # Load trained model & vectorizer
-model_path = "D:/Work/Project/Fake News Detection/Real Time/Real Time Sources/fake_news_model.pkl"
-vectorizer_path = "D:/Work/Project/Fake News Detection/Real Time/Real Time Sources/vectorizer.pkl"
+model_path = "fake_news_model.pkl"
+vectorizer_path = "vectorizer.pkl"
 
 model = joblib.load(model_path)
 vectorizer = joblib.load(vectorizer_path)
@@ -23,20 +25,35 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-# ✅ Fix Google Search Function
 def get_news_sources(query):
-    search_results = list(search(query, num_results=5))  # Updated argument name
+    short_query = " ".join(query.split()[:8])  # shorter query works better
+
+    try:
+        search_results = list(search(short_query, num_results=3))
+    except:
+        return {}
+
     sources = {}
+
     for url in search_results:
         try:
-            response = requests.get(url, timeout=5)
+            headers = {"User-Agent": "Mozilla/5.0"}
+            response = requests.get(url, headers=headers, timeout=3)
+
             soup = BeautifulSoup(response.text, "html.parser")
-            text = ' '.join([p.text for p in soup.find_all('p')])
-            sources[url] = text[:500]  # Store first 500 characters
+            paragraphs = soup.find_all('p')
+
+            text = " ".join([p.get_text() for p in paragraphs])
+            sources[url] = text[:200]
+
         except:
             continue
+
     return sources
 
+
+
+@app.get("/predict")
 @app.get("/predict/")
 async def predict_news(news_text: str):
     if not news_text:

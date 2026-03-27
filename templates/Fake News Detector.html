@@ -102,10 +102,12 @@
 
     <footer class="bg-gray-50 text-center  mt-auto fixed-bottom py-8">
         <div class="text-gray-600 text-sm">© 2025 FakeOut. All rights reserved.</div>
-    </footer>    
-
+    </footer> 
+    
     <script>
-        async function checkNews() {
+    async function checkNews() {
+        console.log("Button clicked");
+
         let newsText = document.getElementById("newsInput").value;
 
         if (!newsText) {
@@ -113,56 +115,58 @@
             return;
         }
 
-        document.getElementById("resultSection").classList.remove("hidden");
-        document.getElementById("resultSection").classList.add("show");
-        document.getElementById("resultPrediction").textContent = "Checking...";
-        document.getElementById("sourcesList").innerHTML = "";
-
+        let resultSection = document.getElementById("resultSection");
+        let resultPrediction = document.getElementById("resultPrediction");
         let progressBar = document.getElementById("progressBar");
+
+        resultSection.classList.remove("hidden");
+        resultPrediction.innerText = "Checking...";
+
         progressBar.classList.remove("bg-red-500", "bg-green-500");
         progressBar.style.width = "0%";
 
         try {
-            let response = await fetch("http://127.0.0.1:8000/predict/?news_text=" + encodeURIComponent(newsText), {
-                method: "GET",
+            let response = await fetch("http://127.0.0.1:5000/predict", {
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json"
-                }
+                },
+                body: JSON.stringify({ text: newsText })
             });
 
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
-
             let data = await response.json();
+            console.log("API:", data);
 
-            document.getElementById("resultPrediction").textContent = `Prediction: ${data.prediction}`;
+            // 👇 FIX STARTS HERE
+            let pred = data.prediction;
 
-            if (data.prediction.trim().toUpperCase() === "FAKE") {
-                progressBar.classList.remove("bg-green-500");
+            // force show result
+            resultSection.classList.remove("hidden");
+            resultSection.style.display = "block";
+            resultSection.classList.add("show");   
+
+            // clear old styles
+            progressBar.classList.remove("bg-red-500", "bg-green-500");
+
+            // set text
+            resultPrediction.innerText = "Prediction: " + pred;
+
+            // set color + bar
+            if (pred === "FAKE") {
                 progressBar.classList.add("bg-red-500");
                 progressBar.style.width = "85%";
             } else {
-                progressBar.classList.remove("bg-red-500");
                 progressBar.classList.add("bg-green-500");
                 progressBar.style.width = "100%";
             }
 
-            let sourcesList = "";
-            for (const [source, text] of Object.entries(data.sources)) {
-                sourcesList += `<div class="source-card bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-                    <a href="${source}" target="_blank" class="text-primary hover:underline block mb-2">${source}</a>
-                    <p class="text-gray-600">${text.slice(0, 100)}...</p>
-                </div>`;
-            }
-            document.getElementById("sourcesList").innerHTML = sourcesList;
 
         } catch (error) {
-            console.error("Error fetching prediction", error);
-            document.getElementById("resultPrediction").textContent = "Error checking news. Please try again.";
-            document.getElementById("sourcesList").innerHTML = "";
+            console.error("Error:", error);
+            resultPrediction.innerText = "Error connecting to server";
         }
     }
-    </script>
+</script>
+
 </body>
 </html>
