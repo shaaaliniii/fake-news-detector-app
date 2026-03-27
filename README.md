@@ -63,35 +63,67 @@ Fake_News_Detector/
 
 ## ⚙️ Installation & Setup
 
+Follow these steps to run the project locally on your system:
+
+### 1️⃣ Clone the Repository
+
 ```bash
-# Clone the repository
 git clone https://github.com/shaaaliniii/fake-news-detector-app.git
+```
 
-# Navigate to project
+### 2️⃣ Navigate to the Project Directory
+
+```bash
 cd fake-news-detector-app
+```
 
-# Create virtual environment
+### 3️⃣ Create a Virtual Environment
+
+```bash
 python -m venv venv
+```
+
+### 4️⃣ Activate the Virtual Environment
+
+* **Windows:**
+
+```bash
 venv\Scripts\activate
+```
 
-# Install dependencies
+* **Mac/Linux:**
+
+```bash
+source venv/bin/activate
+```
+
+### 5️⃣ Install Dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
-# Run the app
+### 6️⃣ Run the Application
+
+```bash
 python app.py
+```
+
+### 7️⃣ Open in Browser
+
+Go to:
+
+```
+http://127.0.0.1:5000
 ```
 
 ---
 
-## 🌐 Usage
+💡 **Tip:**
+Make sure all required files (model `.pkl`, vectorizer, etc.) are present before running the app.
 
-1. Enter a news article
-2. Click **Check News**
-3. Get result: **Real / Fake**
 
-For summarization:
 
-* Enter article → get key points instantly
 
 ---
 
